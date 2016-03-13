@@ -32,7 +32,7 @@ CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
 map<uint256, CBlockIndex*> mapBlockIndex;
-uint256 hashGenesisBlock("0x00000d5da5902b3a2c6ce2f115b48181e3ad08087d4bd62733069affa9d609d9"); //mainnet
+uint256 hashGenesisBlock("00000eee4fe96f270e264a4b34415c47aced1c6c865c0cd19dc54d0b7d696801"); //mainnet
 
 static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // Bestericoin: starting difficulty is 1 / 2^12
 CBlockIndex* pindexGenesisBlock = NULL;
@@ -1093,7 +1093,7 @@ int64 static GetBlockValue(int nBits, int nHeight, int64 nFees)
 	
 	int64 nSubsidy = 0;
     if(nHeight > 120) nSubsidy = 100;
-    if((nHeight >= 100)&&(nHeight <=120 )) nSubsidy = 0;
+    if((nHeight >= 100)&&(nHeight <=120 )) nSubsidy = 120;
     if(nHeight < 100) nSubsidy = 1500000;
 
     // printf("height %u diff %4.2f reward %i \n", nHeight, dDiff, nSubsidy);
@@ -2807,7 +2807,7 @@ bool LoadBlockIndex()
 bool InitBlockIndex() {
     // Check whether we're already initialized
     if (pindexGenesisBlock != NULL)
-        return true;
+        return false;
 
     // Use the provided setting for -txindex in the new database
     fTxIndex = GetBoolArg("-txindex", false);
@@ -2823,16 +2823,16 @@ bool InitBlockIndex() {
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 1250 * COIN;
+        txNew.vout[0].nValue = 100 * COIN;
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("04637de7ee7b422960df58f847c93c2fb6f626edb0350046a8671b9dd1b89c8cb74c1793a32eb8840c34de2c5f8fde5dc6710609fdb6361f4ffe46a152b1006f34") << OP_CHECKSIG;															
         CBlock block;
         block.vtx.push_back(txNew);
         block.hashPrevBlock = 0;
-        block.hashMerkleRoot = block.BuildMerkleTree();
+		block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1456704000;
+        block.nTime    = 1457859544;
         block.nBits    = 0x1e0ffff0;
-        block.nNonce   = 225557;
+        block.nNonce   = 3449117;
 
         if (fTestNet)
         {
@@ -2844,9 +2844,8 @@ bool InitBlockIndex() {
         printf("%s\n", block.GetHash().ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x149bffd83f9e736337b6c9824877436b4bb33692e089c13b91e23cdcd6e6ebb5"));
-        //assert(block.GetHash() == hashGenesisBlock);
-		        if (true && (block.GetHash() != hashGenesisBlock)) {
+        assert(block.GetHash() == hashGenesisBlock);
+		        if (false && (block.GetHash() != hashGenesisBlock)) {
 
         // This will figure out a valid hash and Nonce if you're
         // creating a different genesis block:
